@@ -1,4 +1,4 @@
-package com.coinexchange;
+package com.exampleapp;
 
 import android.app.Application;
 
