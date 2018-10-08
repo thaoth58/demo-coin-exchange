@@ -19,15 +19,15 @@ export default class BinanceAdapter extends ExchangeAdapter {
         timestamp: currentTime,
         signature: sign
       },
-      header: {
+      headers: {
         'X-MBX-APIKEY': this.apiKey
       }
     })
       .then(function (response) {
-        console.log(response);
+        console.log(response.data);
       })
       .catch(function (error) {
-      console.log(error)
+      console.log(error.request)
     })
       .then(function () {
 
