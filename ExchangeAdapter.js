@@ -4,17 +4,21 @@ export default class ExchangeAdapter {
   name: string;
   apiKey: string;
   secretKey: string;
-  listAsset: Array;
-  host: string;
+  listAsset: [Asset];
+  baseUrl: string;
 
   constructor(apiKey, secretKey) {
     this.apiKey = apiKey;
     this.secretKey = secretKey;
-    this.listAsset = new Array();
+    this.listAsset = [];
   }
 
   totalBalance() {
-    return 0;
+    var result = 0;
+    // for asset in this.listAsset {
+    //   result += asset.totalPrice()
+    // }
+    return result;
   }
 
   updateKeys(apiKey, secretKey) {

@@ -12,6 +12,7 @@ import {
   View
 } from 'react-native';
 import BinanceAdapter from './BinanceAdapter';
+import Wallet from './Wallet';
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' +
@@ -23,10 +24,15 @@ const instructions = Platform.select({
 type Props = {};
 export default class App extends Component<Props> {
   render() {
+
     let apiKey = "04yScWqaH7CpbnCNX9PtXIjLYOXnLWweFPKxNlFZN3TtCcEdIyGcz0a1ddtvpdTs";
     let secretKey = "SIeFsjnh6HTPEi5pUHxSDsA7Xhx5ip74F9kIF8oN9SlTkaKsyUTZgMwd0R8sI9ap";
 
     let binance = new BinanceAdapter(apiKey, secretKey);
+
+    let wallet = new Wallet(binance);
+    wallet.setName('Test wallet');
+
     binance.fetchListAsset(
       () => {
         console.log("Success");
@@ -35,7 +41,6 @@ export default class App extends Component<Props> {
         console.log("Error");
       }
     );
-    console.log(binance);
 
     return (
       <View style={styles.container}>
