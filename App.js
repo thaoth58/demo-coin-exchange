@@ -9,7 +9,9 @@ import {
   Platform,
   StyleSheet,
   Text,
-  View
+  View,
+  FlatList,
+  ActivityIndicator
 } from 'react-native';
 import BinanceAdapter from './BinanceAdapter';
 import Wallet from './Wallet';
@@ -23,8 +25,50 @@ const instructions = Platform.select({
 
 type Props = {};
 export default class App extends Component<Props> {
-  render() {
+  constructor(props) {
+    super(props);
+    this.state = {
+      listAsset: [],
+      loading: true
+    }
+  }
 
+  componentDidMount() {
+    this.initWallet();
+  }
+
+  _keyExtractor = (item, index) => item.id;
+
+  render() {
+    return (
+      <View style={styles.container}>
+        {this._renderLoading()}
+        <FlatList
+          data={this.state.listAsset}
+          keyExtractor={this._keyExtractor}
+          renderItem={this._renderItem}
+        />
+      </View>
+    );
+  }
+
+  _renderItem = ({item}) => (
+    <View style={styles.itemContainer}>
+      <Text>{item.name}</Text>
+      <Text style={{marginLeft: 8}}>{item.balance}</Text>
+      <Text style={{marginLeft: 8}}>{item.totalPrice()}</Text>
+    </View>
+  )
+
+  _renderLoading = () => {
+    if (this.state.loading) {
+      return <ActivityIndicator/>
+    }
+    return null;
+  }
+
+
+  initWallet() {
     let apiKey = "04yScWqaH7CpbnCNX9PtXIjLYOXnLWweFPKxNlFZN3TtCcEdIyGcz0a1ddtvpdTs";
     let secretKey = "SIeFsjnh6HTPEi5pUHxSDsA7Xhx5ip74F9kIF8oN9SlTkaKsyUTZgMwd0R8sI9ap";
 
@@ -35,25 +79,14 @@ export default class App extends Component<Props> {
 
     binance.fetchListAsset(
       () => {
-        console.log("Success");
+        this.setState({
+          listAsset: binance.getListAsset(),
+          loading: false
+        })
       },
       () => {
-        console.log("Error");
+        this.setState({loading: false})
       }
-    );
-
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit App.js
-        </Text>
-        <Text style={styles.instructions}>
-          {instructions}
-        </Text>
-      </View>
     );
   }
 }
@@ -62,17 +95,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    marginTop: 64,
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
+  itemContainer: {
+    height: 50,
+    marginLeft: 10,
+    flexDirection: 'row',
   },
 });

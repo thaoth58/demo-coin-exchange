@@ -23,25 +23,83 @@ export default class BinanceAdapter extends ExchangeAdapter {
     axios.get(this.baseUrl + 'account', {
       params: params,
       headers: headers
-    })
-      .then(function (response) {
+      })
+      .then((response) => {
         let balances = response.data.balances;
+        var listAsset = [];
+
         for (let i = 0; i < balances.length; i++) {
           let obj = balances[i];
-          let asset = new Asset(obj.asset, '', '', obj.free, 0.0);
-          if (asset.balance > 0) {
-            console.log(asset);
-            this.listAsset.push(asset);
+          if (obj.free > 0) {
+            let asset = new Asset(obj.asset, '', '', obj.free, 0.0);
+            listAsset.push(asset);
           }
         }
-        console.log(this.listAsset);
+        this.listAsset = listAsset;
+
+        this.fetchListPrice(fetchSuccessCallback);
       })
-      .catch(function (error) {
+      .catch((error) => {
         fetchErrorCallback();
-    })
-      .then(function () {
+      })
+      .then(() => {
+      });
+  }
+
+
+  fetchListPrice(successCallback) {
+    axios.get(this.baseUrl + 'ticker/price')
+      .then((response) => {
+        let data = response.data;
+
+        this.updatePrice(data, successCallback);
+      })
+      .catch((error) => {
+        console.log(error);
+        fetchErrorCallback();
+      })
+      .then(() => {
 
       });
+  }
+
+  updatePrice(data, successCallback) {
+    let BTCUSDT = 0;
+    let ETHUSDT = 0;
+    let BNBUSDT = 0;
+
+    for (let i = 0; i < data.length; i++) {
+      let ticker = data[i];
+      if (ticker.symbol === 'BTCUSDT') {
+        BTCUSDT = ticker.price;
+      } else if (ticker.symbol === 'ETHUSDT') {
+        ETHUSDT = ticker.price;
+      } else if (ticker.symbol === 'BNBUSDT') {
+        BNBUSDT = ticker.price;
+      }
+    }
+
+    for (let i = 0; i < this.listAsset.length; i++) {
+      let asset = this.listAsset[i];
+      for (let j = 0; j < data.length; j++) {
+        let ticker = data[j];
+        if (ticker.symbol == asset.name + 'USDT') {
+          asset.price = ticker.price;
+          break;
+        } else if (ticker.symbol == asset.name + 'BTC') {
+          asset.price = ticker.price * BTCUSDT;
+          break;
+        } else if (ticker.symbol == asset.name + 'ETH') {
+          asset.price = ticker.price * ETHUSDT;
+          break;
+        } else if (ticker.symbol == asset.name + 'BNB') {
+          asset.price = ticker.price * BNBUSDT;
+          break;
+        }
+      }
+    }
+
+    successCallback();
   }
 }
 

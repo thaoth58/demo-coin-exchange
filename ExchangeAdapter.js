@@ -4,13 +4,13 @@ export default class ExchangeAdapter {
   name: string;
   apiKey: string;
   secretKey: string;
-  listAsset: [Asset];
+  listAsset: array;
   baseUrl: string;
 
   constructor(apiKey, secretKey) {
     this.apiKey = apiKey;
     this.secretKey = secretKey;
-    this.listAsset = [];
+    this.listAsset = new Array();
   }
 
   totalBalance() {
