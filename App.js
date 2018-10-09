@@ -11,7 +11,8 @@ import {
   Text,
   View,
   FlatList,
-  ActivityIndicator
+  ActivityIndicator,
+  Image
 } from 'react-native';
 import BinanceAdapter from './BinanceAdapter';
 import Wallet from './Wallet';
@@ -54,7 +55,11 @@ export default class App extends Component<Props> {
 
   _renderItem = ({item}) => (
     <View style={styles.itemContainer}>
-      <Text>{item.name}</Text>
+      <Image
+        style={{width: 30, height: 30}}
+        source={{uri: item.iconUrl}}
+      />
+      <Text style={{marginLeft: 8}}>{item.name}</Text>
       <Text style={{marginLeft: 8}}>{item.balance}</Text>
       <Text style={{marginLeft: 8}}>{item.totalPrice()}</Text>
     </View>
@@ -77,17 +82,19 @@ export default class App extends Component<Props> {
     let wallet = new Wallet(binance);
     wallet.setName('Test wallet');
 
-    binance.fetchListAsset(
-      () => {
-        this.setState({
-          listAsset: binance.getListAsset(),
-          loading: false
-        })
-      },
-      () => {
-        this.setState({loading: false})
-      }
-    );
+    binance.getCoinMap(() => {
+      binance.fetchListAsset(
+        () => {
+          this.setState({
+            listAsset: binance.getListAsset(),
+            loading: false
+          })
+        },
+        () => {
+          this.setState({loading: false})
+        }
+      );
+    });
   }
 }
 

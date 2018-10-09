@@ -28,18 +28,30 @@ export default class BinanceAdapter extends ExchangeAdapter {
         let balances = response.data.balances;
         var listAsset = [];
 
-        for (let i = 0; i < balances.length; i++) {
-          let obj = balances[i];
+        let baseIconUrl = 'https://s2.coinmarketcap.com/static/img/coins/64x64/';
+
+        balances.forEach((obj) => {
           if (obj.free > 0) {
-            let asset = new Asset(obj.asset, '', '', obj.free, 0.0);
+            var iconUrl = '';
+            if (this.coinMap.length) {
+              for (let i = 0; i < this.coinMap.length; i++) {
+                let map = this.coinMap[i];
+                if (obj.asset == map.symbol) {
+                  iconUrl = baseIconUrl + map.id + '.png'
+                  break;
+                }
+              }
+            }
+            let asset = new Asset(obj.asset, iconUrl, '', obj.free, 0.0);
             listAsset.push(asset);
           }
-        }
+        });
         this.listAsset = listAsset;
-
+        console.log(this.listAsset);
         this.fetchListPrice(fetchSuccessCallback);
       })
       .catch((error) => {
+        console.log(error);
         fetchErrorCallback();
       })
       .then(() => {
@@ -64,18 +76,33 @@ export default class BinanceAdapter extends ExchangeAdapter {
   }
 
   updatePrice(data, successCallback) {
-    let BTCUSDT = 0;
-    let ETHUSDT = 0;
-    let BNBUSDT = 0;
+    let mapPrice = [
+      {
+        name: 'USDT',
+        price: 1
+      },
+      {
+        name: 'BTC',
+        price: 0
+      },
+      {
+        name: 'ETH',
+        price: 0
+      },
+      {
+        name: 'BNB',
+        price: 0
+      },
+    ];
 
     for (let i = 0; i < data.length; i++) {
       let ticker = data[i];
-      if (ticker.symbol === 'BTCUSDT') {
-        BTCUSDT = ticker.price;
-      } else if (ticker.symbol === 'ETHUSDT') {
-        ETHUSDT = ticker.price;
-      } else if (ticker.symbol === 'BNBUSDT') {
-        BNBUSDT = ticker.price;
+      for (let j = 1; j < mapPrice.length; j++) {
+        let map = mapPrice[j];
+        if (ticker.symbol == map.name + 'USDT') {
+          map.price = ticker.price;
+          break;
+        }
       }
     }
 
@@ -83,17 +110,16 @@ export default class BinanceAdapter extends ExchangeAdapter {
       let asset = this.listAsset[i];
       for (let j = 0; j < data.length; j++) {
         let ticker = data[j];
-        if (ticker.symbol == asset.name + 'USDT') {
-          asset.price = ticker.price;
-          break;
-        } else if (ticker.symbol == asset.name + 'BTC') {
-          asset.price = ticker.price * BTCUSDT;
-          break;
-        } else if (ticker.symbol == asset.name + 'ETH') {
-          asset.price = ticker.price * ETHUSDT;
-          break;
-        } else if (ticker.symbol == asset.name + 'BNB') {
-          asset.price = ticker.price * BNBUSDT;
+        var breakThisLoop = false;
+        for (k = 0; k < mapPrice.length; k++) {
+          let map = mapPrice[k];
+          if (ticker.symbol == asset.name + map.name) {
+            asset.price = ticker.price * map.price;
+            breakThisLoop = true;
+            break;
+          }
+        }
+        if (breakThisLoop) {
           break;
         }
       }
