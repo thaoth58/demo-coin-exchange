@@ -89,8 +89,7 @@ export default class BinanceAdapter extends ExchangeAdapter {
     ];
 
     data.forEach((ticker) => {
-      for (let i = 1; i < mapPrice.length; i++) {
-        let map = mapPrice[i];
+      for (let map of mapPrice) {
         if (ticker.symbol == map.name + 'USDT') {
           map.price = ticker.price;
           break;
@@ -99,11 +98,9 @@ export default class BinanceAdapter extends ExchangeAdapter {
     })
 
     this.listAsset.forEach((asset) => {
-      for (let i = 0; i < data.length; i++) {
-        let ticker = data[i];
+      for (let ticker of data) {
         var breakThisLoop = false;
-        for (let j = 0; j < mapPrice.length; j++) {
-          let map = mapPrice[j];
+        for (let map of mapPrice) {
           if (ticker.symbol == asset.name + map.name) {
             asset.price = ticker.price * map.price;
             breakThisLoop = true;

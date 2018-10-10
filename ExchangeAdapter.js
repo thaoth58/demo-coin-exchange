@@ -20,8 +20,7 @@ export default class ExchangeAdapter {
 
   totalBalance() {
     var result = 0;
-    for (let i = 0; i < this.listAsset.length; i++) {
-      let asset = this.listAsset[i];
+    for (let asset of this.listAsset) {
       result += asset.totalPrice();
     }
     return result;
