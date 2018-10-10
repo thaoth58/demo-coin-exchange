@@ -8,12 +8,14 @@ export default class ExchangeAdapter {
   listAsset: array;
   baseUrl: string;
   coinMap: map;
+  baseIconUrl: string;
 
   constructor(apiKey, secretKey) {
     this.apiKey = apiKey;
     this.secretKey = secretKey;
     this.listAsset = new Array();
     this.coinMap = new Map();
+    this.baseIconUrl = 'https://s2.coinmarketcap.com/static/img/coins/64x64/';
   }
 
   totalBalance() {
@@ -56,3 +58,6 @@ export default class ExchangeAdapter {
       });
   }
 }
+
+export const encodeGetParams = p =>
+  Object.entries(p).map(kv => kv.map(encodeURIComponent).join("=")).join("&");

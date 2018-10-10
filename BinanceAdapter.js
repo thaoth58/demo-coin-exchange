@@ -1,4 +1,5 @@
 import ExchangeAdapter from "./ExchangeAdapter";
+import {encodeGetParams} from "./ExchangeAdapter";
 import Asset from "./Asset";
 
 const axios = require('axios');
@@ -25,10 +26,9 @@ export default class BinanceAdapter extends ExchangeAdapter {
       headers: headers
       })
       .then((response) => {
+        console.log(response);
         let balances = response.data.balances;
         var listAsset = [];
-
-        let baseIconUrl = 'https://s2.coinmarketcap.com/static/img/coins/64x64/';
 
         balances.forEach((obj) => {
           if (obj.free > 0) {
@@ -37,7 +37,7 @@ export default class BinanceAdapter extends ExchangeAdapter {
               for (let i = 0; i < this.coinMap.length; i++) {
                 let map = this.coinMap[i];
                 if (obj.asset == map.symbol) {
-                  iconUrl = baseIconUrl + map.id + '.png'
+                  iconUrl = this.baseIconUrl + map.id + '.png'
                   break;
                 }
               }
@@ -53,8 +53,6 @@ export default class BinanceAdapter extends ExchangeAdapter {
       .catch((error) => {
         console.log(error);
         fetchErrorCallback();
-      })
-      .then(() => {
       });
   }
 
@@ -69,9 +67,6 @@ export default class BinanceAdapter extends ExchangeAdapter {
       .catch((error) => {
         console.log(error);
         fetchErrorCallback();
-      })
-      .then(() => {
-
       });
   }
 
@@ -128,6 +123,3 @@ export default class BinanceAdapter extends ExchangeAdapter {
     successCallback();
   }
 }
-
-const encodeGetParams = p =>
-  Object.entries(p).map(kv => kv.map(encodeURIComponent).join("=")).join("&");
