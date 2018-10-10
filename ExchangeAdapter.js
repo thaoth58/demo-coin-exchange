@@ -5,9 +5,9 @@ export default class ExchangeAdapter {
   name: string;
   apiKey: string;
   secretKey: string;
-  listAsset: array;
+  listAsset: Array;
   baseUrl: string;
-  coinMap: map;
+  coinMap: Object;
   baseIconUrl: string;
 
   constructor(apiKey, secretKey) {
@@ -33,6 +33,7 @@ export default class ExchangeAdapter {
   }
 
   fetchListAsset(fetchSuccessCallback, fetchErrorCallback) {
+    //Need decrypt apiKey + secretKey before fetching.
     throw "Abstract method fetchListAsset not implemented";
   }
 
@@ -41,6 +42,7 @@ export default class ExchangeAdapter {
   }
 
   getCoinMap(callback) {
+    //Check coin map exist or not
     let url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/map';
 
     axios.get(url, {

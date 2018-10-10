@@ -2,8 +2,8 @@ export default class Asset {
   name: string;
   iconUrl: string;
   type: string;
-  balance: double;
-  price: double;
+  balance: number;
+  price: number;
 
   constructor(name, iconUrl, type, balance, price) {
     this.name = name;

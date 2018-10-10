@@ -26,7 +26,6 @@ export default class BinanceAdapter extends ExchangeAdapter {
       headers: headers
       })
       .then((response) => {
-        console.log(response);
         let balances = response.data.balances;
         var listAsset = [];
 
@@ -47,7 +46,6 @@ export default class BinanceAdapter extends ExchangeAdapter {
           }
         });
         this.listAsset = listAsset;
-        console.log(this.listAsset);
         this.fetchListPrice(fetchSuccessCallback);
       })
       .catch((error) => {
@@ -90,24 +88,22 @@ export default class BinanceAdapter extends ExchangeAdapter {
       },
     ];
 
-    for (let i = 0; i < data.length; i++) {
-      let ticker = data[i];
-      for (let j = 1; j < mapPrice.length; j++) {
-        let map = mapPrice[j];
+    data.forEach((ticker) => {
+      for (let i = 1; i < mapPrice.length; i++) {
+        let map = mapPrice[i];
         if (ticker.symbol == map.name + 'USDT') {
           map.price = ticker.price;
           break;
         }
       }
-    }
+    })
 
-    for (let i = 0; i < this.listAsset.length; i++) {
-      let asset = this.listAsset[i];
-      for (let j = 0; j < data.length; j++) {
-        let ticker = data[j];
+    this.listAsset.forEach((asset) => {
+      for (let i = 0; i < data.length; i++) {
+        let ticker = data[i];
         var breakThisLoop = false;
-        for (k = 0; k < mapPrice.length; k++) {
-          let map = mapPrice[k];
+        for (let j = 0; j < mapPrice.length; j++) {
+          let map = mapPrice[j];
           if (ticker.symbol == asset.name + map.name) {
             asset.price = ticker.price * map.price;
             breakThisLoop = true;
@@ -118,7 +114,7 @@ export default class BinanceAdapter extends ExchangeAdapter {
           break;
         }
       }
-    }
+    });
 
     successCallback();
   }
